@@ -24,18 +24,19 @@
           type="password"
           label="Passowrd"
           v-model="password"
-          :rules="[password]"
+          :rules="[rules.password]"
         ></v-text-field>
         <v-text-field
           type="password"
           label="Repeat Password"
           v-model="confPass"
-          :rules="[confPassRule]"
+          :rules="[rules.password]"
         ></v-text-field>
         <v-select
           label
           :items="['user', 'master', 'admin']"
           placeholder="Select a role"
+          v-model="role"
           outlined
         ></v-select>
       </v-card-text>
@@ -43,13 +44,15 @@
       <v-divider></v-divider>
 
       <v-card-actions>
-        <v-btn color="success">Signup</v-btn>
+        <v-btn color="success" @click="submit">Signup</v-btn>
       </v-card-actions>
     </v-card>
   </div>
 </template>
 
 <script>
+import authService from '../services/authService'
+
 export default {
   name: "HelloWorld",
 
@@ -58,6 +61,7 @@ export default {
     email: "",
     password: "",
     confPass: "",
+    role: "",
     formHasErrors: false,
     snackbar: false,
     rules: {
@@ -93,6 +97,16 @@ export default {
 
       if (!this.formHasErrors) this.signup();
     },
+    signup() {
+      authService
+        .signup(this.name, this.email, this.password, this.role)
+        .then(res => {
+          localStorage.setItem('token', res.token)
+          localStorage.setItem('email', res.email)
+          localStorage.setItem('role', res.role)
+        })
+        .catch(err => console.log(err))
+    }
   },
 };
 </script>
